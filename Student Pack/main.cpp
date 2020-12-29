@@ -7,7 +7,7 @@ using namespace std;
 
 // tester
 int main() {
-
+    /*
     // read input file
     ifstream inputF;
 
@@ -56,11 +56,17 @@ int main() {
     }
 
     file.close();
-		
+		*/
 		
 	// YOU CAN WRITE YOUR TEST CASES BELOW
-	
+	HashTable<int, int> table;
+    table.Insert(4,3);
+    table.Insert(5,3);
+    table.Insert(8,3);
+    table.Insert(1,3);
+    table.yazdir();
 
+    
 
     return 0;
 }
