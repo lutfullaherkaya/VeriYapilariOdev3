@@ -1,6 +1,7 @@
 #ifndef __HASHTABLE__
 #define __HASHTABLE__
 
+
 #include "HashUtils.h"
 #include "ItemNotFoundException.h"
 /* Do not add new libraries or files */
@@ -31,12 +32,13 @@ class HashTable {
 
     // == DEFINE HELPER METHODS & VARIABLES BELOW ==
 
-    // TODO: sil
-    friend int main();
 
     Entry &bul(const K &key, bool ekliyoruz) const;
-    void yazdir();
 
+    /*
+    * iostream yokmus
+    void yazdir();
+    */
 
     
 
@@ -88,7 +90,7 @@ HashTable<K, T>::HashTable() : _capacity(NextCapacity(0)), _size(0) {
 
 template <class K, class T>
 HashTable<K, T>::HashTable(const HashTable<K, T> &rhs) : _table(NULL) {
-    (*this) = rhs;
+    *this = rhs;
 }
 
 template <class K, class T>
@@ -100,7 +102,9 @@ HashTable<K, T> &HashTable<K, T>::operator=(const HashTable<K, T> &rhs) {
     _table = new Bucket[_capacity];
     _size = rhs._size;
     for (int i = 0; i < _capacity; ++i) {
-        _table[i] = rhs._table[i];
+        for (int j = 0; j < BUCKET_SIZE; ++j) {
+            _table[i].entries[j] = rhs._table[i].entries[j];
+        }
     }
     return (*this);
 }
@@ -129,7 +133,7 @@ void HashTable<K, T>::Insert(const K &key, const T &value) {
         entry.Active = true;
         entry.Deleted = false;
         _size++;
-        if ((double)_size / ((double)_capacity * BUCKET_SIZE) > 0.6) {
+        if (_size / ((double)_capacity * BUCKET_SIZE) > 0.6) {
             Resize(NextCapacity(_capacity));
         }
     }
@@ -152,6 +156,7 @@ T &HashTable<K, T>::Get(const K &key) const {
     /* ara, aktifleri ve deletedleri atlayarak ilerlerken bulursan degerini [dondur]
      * inaktif ve silinmemisle karsilasirsan throw 
      */
+
     return bul(key, false).Value;
 }
 
@@ -160,9 +165,11 @@ template <class K, class T>
 void HashTable<K, T>::Resize(int newCapacity) {
     Bucket *eskiTable = _table;
     int eskiKapasite = _capacity;
-    _capacity = newCapacity;
 
+    _capacity = newCapacity;
     _table = new Bucket[_capacity];
+    _size = 0;
+    
     for (int i = 0; i < eskiKapasite; ++i) {
         for (int j = 0; j < BUCKET_SIZE; ++j) {
             Entry &entry = eskiTable[i].entries[j];
@@ -237,8 +244,8 @@ typename HashTable<K,T>::Entry & HashTable<K, T>::bul(const K & key, bool ekliyo
     }
 }
 
-// TODO: silinecek
-#include <iostream>
+/*
+* iostream yokmus
 template<class K, class T>
 void HashTable<K, T>::yazdir() {
     std::cout << "[";
@@ -255,6 +262,7 @@ void HashTable<K, T>::yazdir() {
     }
     std::cout << "]";
 }
+*/
 
 
 #endif

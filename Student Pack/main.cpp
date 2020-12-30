@@ -60,11 +60,17 @@ int main() {
 		
 	// YOU CAN WRITE YOUR TEST CASES BELOW
 	HashTable<int, int> table;
-    table.Insert(4,3);
-    table.Insert(5,3);
-    table.Insert(8,3);
-    table.Insert(1,3);
+    table.Insert(4,33);
+    table.Insert(5,322);
+    table.Insert(8,3123);
+    table.Insert(1,37777);
     table.yazdir();
+    table.Insert(123,33);
+    table.Insert(15351234,99993);
+    table.Insert(1443,43);
+    table.yazdir();
+
+
 
     
 
