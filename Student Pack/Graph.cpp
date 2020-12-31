@@ -196,6 +196,14 @@ bool Graph::keydenBaslaDFSCycleVarMi(int key, HashTable<int, dugumDurumu> &dugum
                 return true;
             }
         }
+            }
+        }
+        itr++;
+        
+            }
+        }
+        itr++;
+        
     }
     dugumDurumlari.Get(key).kesfediliyor = false;
     dugumDurumlari.Get(key).ziyaretEdildi = true;
