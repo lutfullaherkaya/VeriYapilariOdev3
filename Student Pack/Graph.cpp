@@ -71,71 +71,43 @@ void Graph::deleteNode(const Node &node) {
 }
 
 list<string> Graph::findLeastCostPath(const Node &srcNode, const Node &destNode) {
-    HashTable<int, MesafeVeOncekiDugum> dugumTablosu;
-
-    int *anahtarlar = new int[komsuListeleri.Size()];
+    const int anahtarSayisi = komsuListeleri.Size();
+    int *anahtarlar = new int[anahtarSayisi];
     komsuListeleri.getKeys(anahtarlar);
 
-    for (int i = 0; i < komsuListeleri.Size(); ++i) {
-        dugumTablosu.Insert(anahtarlar[i], 
-            MesafeVeOncekiDugum(std::numeric_limits<int>::max(), -1));
+    HashTable<int, MesafeVeDugum> dugumTablosu;
+    for (int i = 0; i < anahtarSayisi; ++i) {
+        dugumTablosu.Insert(anahtarlar[i],
+            MesafeVeDugum(std::numeric_limits<int>::max(), -1));
     }
     dugumTablosu.Get(srcNode.getVid()).mesafe = 0;
 
-    std::priority_queue<MesafeVeOncekiDugum, 
-        std::vector<MesafeVeOncekiDugum>, MesafeVeOncekiDugum::Kiyasla> pq;
+    std::priority_queue<MesafeVeDugum,
+        std::vector<MesafeVeDugum>, MesafeVeDugum::Kiyasla> pq;
+    pq.push(MesafeVeDugum(0, srcNode.getVid()));
 
-
-    pq.push(MesafeVeOncekiDugum(0, srcNode.getVid()));
-
-
-    /* Looping till priority queue becomes empty (or all
-    distances are not finalized) */
-    while (!pq.empty()) {
-        // The first vertex in pair is the minimum distance 
-        // vertex, extract it from priority queue. 
-        // vertex label is stored in second of pair (it 
-        // has to be done this way to keep the vertices 
-        // sorted distance (distance must be first item 
-        // in pair) 
-        int u = pq.top().oncekiDugum;
+    while (!pq.empty() && pq.top().dugum != destNode.getVid()) {
+        int dugum = pq.top().dugum;
         pq.pop();
 
-        if (destNode.getVid() == u) {
-            break;
-        }
+        edgeListItr iSon = komsuListeleri.Get(dugum).end();
+        for (edgeListItr i = komsuListeleri.Get(dugum).begin(); i != iSon; ++i) {
+            int komsu = i->getTailNode().getVid();
+            long yeniMesafe = dugumTablosu.Get(dugum).mesafe + i->getImport();
 
-
-        // 'i' is used to get all adjacent vertices of a vertex 
-        edgeListItr i;
-        edgeListItr iSon = komsuListeleri.Get(u).end();
-
-
-        for (i = komsuListeleri.Get(u).begin(); i != iSon; ++i) {
-            // Get vertex label and weight of current adjacent 
-            // of u. 
-            int v = i->getTailNode().getVid();
-            long kenarUzunlugu = i->getImport();
-
-            
-
-            //  If there is shorted path to v through u.
-            long &vUzakligi = dugumTablosu.Get(v).mesafe;
-            int &vOncekiDugum = dugumTablosu.Get(v).oncekiDugum;
-            long &uUzakligi = dugumTablosu.Get(u).mesafe;
-            if (vUzakligi > uUzakligi + kenarUzunlugu) {
-
-                vUzakligi = uUzakligi + kenarUzunlugu;
-                vOncekiDugum = u;
-
-                pq.push(MesafeVeOncekiDugum(dugumTablosu.Get(v).mesafe, v));
+            if (dugumTablosu.Get(komsu).mesafe > yeniMesafe) {
+                dugumTablosu.Get(komsu).mesafe = yeniMesafe;
+                dugumTablosu.Get(komsu).dugum = dugum;
+                pq.push(MesafeVeDugum(yeniMesafe, komsu));
             }
         }
     }
 
     list<string> path;
     int dugum;
-    for (dugum = destNode.getVid(); dugumTablosu.Get(dugum).oncekiDugum != -1; dugum = dugumTablosu.Get(dugum).oncekiDugum) {
+    for (dugum = destNode.getVid(); dugumTablosu.Get(dugum).dugum != -1;
+        dugum = dugumTablosu.Get(dugum).dugum) {
+
         path.push_front(ulkeIsimleri.Get(dugum));
     }
     path.push_front(ulkeIsimleri.Get(dugum));
@@ -147,18 +119,18 @@ list<string> Graph::findLeastCostPath(const Node &srcNode, const Node &destNode)
 
 bool Graph::isCyclic() {
     // bu algoritma muhtemelen 2 dugum birbirine point ediyorsa bunu da cycle kabul ediyor.
-    int *anahtarlar = new int[komsuListeleri.Size()];
+    const int anahtarSayisi = komsuListeleri.Size();
+    int *anahtarlar = new int[anahtarSayisi];
     komsuListeleri.getKeys(anahtarlar);
 
     HashTable<int, dugumDurumu> dugumDurumlari;
-
-    for (int i = 0; i < komsuListeleri.Size(); ++i) {
+    for (int i = 0; i < anahtarSayisi; ++i) {
         dugumDurumlari.Insert(anahtarlar[i], dugumDurumu());
     }
 
-    for (int i = 0; i < komsuListeleri.Size(); ++i) {
+    for (int i = 0; i < anahtarSayisi; ++i) {
         if (!dugumDurumlari.Get(anahtarlar[i]).ziyaretEdildi) {
-            if (dfsCycleDetect(anahtarlar[i], dugumDurumlari)) {
+            if (keydenBaslaDFSCycleVarMi(anahtarlar[i], dugumDurumlari)) {
                 delete[] anahtarlar;
                 return true;
             }
@@ -166,23 +138,18 @@ bool Graph::isCyclic() {
     }
     delete[] anahtarlar;
     return false;
-
-
-    
 }
 
 
 list<string> Graph::getBFSPath(const Node &srcNode, const Node &destNode) {
-    HashTable<int, bool> ziyaretDurumlari;
-    int *anahtarlar = new int[komsuListeleri.Size()];
+    const int anahtarSayisi = komsuListeleri.Size();
+    int *anahtarlar = new int[anahtarSayisi];
     komsuListeleri.getKeys(anahtarlar);
 
-    for (int i = 0; i < komsuListeleri.Size(); ++i) {
+    HashTable<int, bool> ziyaretDurumlari;
+    for (int i = 0; i < anahtarSayisi; ++i) {
         ziyaretDurumlari.Insert(anahtarlar[i], false);
     }
-
-
-
     delete[] anahtarlar;
 
     list<string> path;
@@ -200,30 +167,19 @@ list<string> Graph::getBFSPath(const Node &srcNode, const Node &destNode) {
                 return path;
             }
 
-
             list<Edge> &komsuListesi = komsuListeleri.Get(simdikiDugum);
-            edgeListItr itr = komsuListesi.begin();
-            while (itr != komsuListesi.end()) {
+            for (edgeListItr itr = komsuListesi.begin(); itr != komsuListesi.end(); ++itr) {
                 int komsu = itr->getTailNode().getVid();
-                if (komsu == 1) {
-                    int a = 0;
-                    komsu+= a;
-                }
-
                 if (ziyaretDurumlari.Get(komsu) == false) {
                     simdikiDugumler.push(komsu);
-
                 }
-                itr++;
             }
         }
-
     }
-
 }
 
 
-bool Graph::dfsCycleDetect(int key, HashTable<int, dugumDurumu> & dugumDurumlari) {
+bool Graph::keydenBaslaDFSCycleVarMi(int key, HashTable<int, dugumDurumu> &dugumDurumlari) const {
     if (dugumDurumlari.Get(key).ziyaretEdildi) {
         return false;
     }
@@ -232,24 +188,16 @@ bool Graph::dfsCycleDetect(int key, HashTable<int, dugumDurumu> & dugumDurumlari
     }
 
     dugumDurumlari.Get(key).kesfediliyor = true;
-
     list<Edge> &komsuListesi = komsuListeleri.Get(key);
-    edgeListItr itr = komsuListesi.begin();
-    while (itr != komsuListesi.end()) {
+    for (edgeListItr itr = komsuListesi.begin(); itr != komsuListesi.end(); itr++) {
         int komsu = itr->getTailNode().getVid();
-        if (komsu != key) {
-            if (!dugumDurumlari.Get(komsu).ziyaretEdildi) {
-                if (dfsCycleDetect(komsu, dugumDurumlari)) {
-                    return true;
-                }
+        if (komsu != key && !dugumDurumlari.Get(komsu).ziyaretEdildi) {
+            if (keydenBaslaDFSCycleVarMi(komsu, dugumDurumlari)) {
+                return true;
             }
         }
-        itr++;
-        
     }
     dugumDurumlari.Get(key).kesfediliyor = false;
     dugumDurumlari.Get(key).ziyaretEdildi = true;
-
-
     return false;
 }
