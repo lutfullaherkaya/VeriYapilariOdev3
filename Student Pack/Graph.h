@@ -67,21 +67,19 @@ private:
     // == DEFINE HELPER METHODS & VARIABLES BELOW ==
     HashTable<int, std::string> ulkeIsimleri;
     
-    struct MesafeVeOncekiDugum {
+    struct MesafeVeDugum {
         long mesafe;
-        int oncekiDugum;
+        int dugum;
 
-        MesafeVeOncekiDugum(long mesafe=-1, int oncekiDugum=-1)
-            : mesafe(mesafe), oncekiDugum(oncekiDugum) {}
+        MesafeVeDugum(long mesafe=-1, int dugum=-1)
+            : mesafe(mesafe), dugum(dugum) {}
 
         struct Kiyasla {
-            bool operator()(MesafeVeOncekiDugum &a, MesafeVeOncekiDugum &b) const {
+            bool operator()(MesafeVeDugum &a, MesafeVeDugum &b) const {
                 return a.mesafe > b.mesafe;
             }
         };
     };
-
-    
 
     struct dugumDurumu {
         bool ziyaretEdildi;
@@ -90,7 +88,7 @@ private:
             : ziyaretEdildi(ziyaretEdildi), kesfediliyor(kesfediliyor) {}
     };
 
-    bool dfsCycleDetect(int key, HashTable<int, dugumDurumu> & dugumDurumlari);
+    bool keydenBaslaDFSCycleVarMi(int key, HashTable<int, dugumDurumu> &dugumDurumlari) const;
 
     typedef list<Edge>::const_iterator edgeListItr;
 

@@ -61,7 +61,7 @@ int main() {
     Node turkey(76, "Turkey", "Asia", 31);
     Node honduras(30, "Honduras", "Asia", 312);
 	// YOU CAN WRITE YOUR TEST CASES BELOW
-    std::list<std::string> path = graph.getBFSPath(turkey, honduras);
+    std::list<std::string> path = graph.findLeastCostPath(turkey, honduras);
     std::list<std::string>::const_iterator itr;
     for (itr = path.begin(); itr != path.end(); ++itr) {
         std::cout << *itr << " ";
