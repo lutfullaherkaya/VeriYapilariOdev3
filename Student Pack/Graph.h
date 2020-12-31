@@ -17,38 +17,38 @@ public:
     // TODO: IMPLEMENT THESE FUNCTIONS.
     /** CONSTRUCTORS, ASSIGNMENT OPERATOR, AND THE DESTRUCTOR */
     Graph();
-    Graph(const Graph& rhs);
-    Graph& operator=(const Graph& rhs);
+    Graph(const Graph &rhs);
+    Graph &operator=(const Graph &rhs);
     ~Graph();
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Adds the given node to the graph with vid or country as key,
      * and an empty edge list as value */
-    void addNode(const Node& node);
+    void addNode(const Node &node);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Adds a new edge to the edge list of headNode using tailNode and import data */
-    void addConnection(const Node& headNode, const Node& tailNode, int import);
+    void addConnection(const Node &headNode, const Node &tailNode, int import);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Given a country, returns all adjacent
      * countries of the given country as a list of Node
      * Throw ItemNotFoundException, if the given node does not exist */
-    list<Node> getAdjacentNodes(const Node& node);
+    list<Node> getAdjacentNodes(const Node &node);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** For the given node, returns the sum of imports */
-    long getTotalImports(const Node& node);
+    long getTotalImports(const Node &node);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Deletes the given country from the graph
      * together with its incident connections(edges) */
-    void deleteNode(const Node& node);
+    void deleteNode(const Node &node);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Given two countries , returns the least cost path/route between
      * them using import values as the edge weight */
-    list<string> findLeastCostPath(const Node& srcNode, const Node& destNode);
+    list<string> findLeastCostPath(const Node &srcNode, const Node &destNode);
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** Detect whether the graph contains any cycle */
@@ -56,15 +56,43 @@ public:
 
     // TODO: IMPLEMENT THIS FUNCTION.
     /** returns the BFS path from srcNode to destNode as a list of country names */
-    list<string> getBFSPath(const Node& srcNode, const Node& destNode);
+    list<string> getBFSPath(const Node &srcNode, const Node &destNode);
 
 private:
-    /** Adjacency list representation of the graph; 
+    /** Adjacency list representation of the graph;
     You can change the signature of this variable*/
-    //HashTable<string, list<Edge>> adjList;
+    HashTable<int, list<Edge>> komsuListeleri;
+
 
     // == DEFINE HELPER METHODS & VARIABLES BELOW ==
+    HashTable<int, std::string> ulkeIsimleri;
+    
+    struct MesafeVeOncekiDugum {
+        long mesafe;
+        int oncekiDugum;
 
+        MesafeVeOncekiDugum(long mesafe=-1, int oncekiDugum=-1)
+            : mesafe(mesafe), oncekiDugum(oncekiDugum) {}
+
+        struct Kiyasla {
+            bool operator()(MesafeVeOncekiDugum &a, MesafeVeOncekiDugum &b) const {
+                return a.mesafe > b.mesafe;
+            }
+        };
+    };
+
+    
+
+    struct dugumDurumu {
+        bool ziyaretEdildi;
+        bool kesfediliyor;
+        dugumDurumu(bool ziyaretEdildi=false, bool kesfediliyor=false)
+            : ziyaretEdildi(ziyaretEdildi), kesfediliyor(kesfediliyor) {}
+    };
+
+    bool dfsCycleDetect(int key, HashTable<int, dugumDurumu> & dugumDurumlari);
+
+    typedef list<Edge>::const_iterator edgeListItr;
 
 };
 // End of header file

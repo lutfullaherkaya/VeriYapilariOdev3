@@ -7,14 +7,15 @@ using namespace std;
 
 // tester
 int main() {
-    /*
+    
     // read input file
     ifstream inputF;
 
     // Metal trade Graph
     Graph graph;
 
-    fstream file("world_trade.txt");
+    // fstream file("world_trade.txt");
+    fstream file("D:\\world_trade.txt");
 
     string vertices;
     getline(file, vertices, '\t'); // skip header
@@ -56,23 +57,33 @@ int main() {
     }
 
     file.close();
-		*/
 		
+    Node turkey(76, "Turkey", "Asia", 31);
+    Node honduras(30, "Honduras", "Asia", 312);
 	// YOU CAN WRITE YOUR TEST CASES BELOW
-	HashTable<int, int> table;
-    table.Insert(4,33);
-    table.Insert(5,322);
-    table.Insert(8,3123);
-    table.Insert(1,37777);
-    table.yazdir();
-    table.Insert(123,33);
-    table.Insert(15351234,99993);
-    table.Insert(1443,43);
-    table.yazdir();
-
-
-
+    std::list<std::string> path = graph.getBFSPath(turkey, honduras);
+    std::list<std::string>::const_iterator itr;
+    for (itr = path.begin(); itr != path.end(); ++itr) {
+        std::cout << *itr << " ";
+    }
     
+    
+    /*
+    Graph cizge;
+    Node turkiye(31, std::string("turkiye"), std::string("asya"), 31000);
+    Node ameriga(52, std::string("amerikabd"), std::string("ameriagga"), 31000);
+
+    cizge.addNode(turkiye);
+    cizge.addNode(ameriga);
+    cizge.addConnection(turkiye, ameriga, 31313131);
+    std::list<std::string> path = cizge.getBFSPath(turkiye, ameriga);
+    std::list<std::string>::const_iterator itr;
+    for (itr = path.begin(); itr != path.end(); ++itr) {
+        std::cout << *itr << " ";
+    }
+    std::cout << cizge.isCyclic();
+
+    */
 
     return 0;
 }

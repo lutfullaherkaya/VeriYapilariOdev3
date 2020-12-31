@@ -35,7 +35,7 @@
     <None Include="Student Pack\Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Student Pack\world_trade.txt" />
+    <Text Include="..\..\..\..\..\..\world_trade.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
